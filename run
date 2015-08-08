@@ -1,1 +1,2 @@
-java -cp target/classes:target/dependency/* net.johnsonlau.app.App
+mvn compile exec:java -Dexec.mainClass=net.johnsonlau.app.App
+#java -cp target/classes:target/dependency/* net.johnsonlau.app.App
