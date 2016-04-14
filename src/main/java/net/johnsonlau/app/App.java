@@ -8,29 +8,51 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.action.index.IndexResponse;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 import org.elasticsearch.common.xcontent.XContentBuilder;
+import com.floragunn.searchguard.ssl.util.SSLConfigConstants;
+import com.floragunn.searchguard.ssl.SearchGuardSSLPlugin;
 
 public class App 
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws Exception
     {
-        System.out.println("start...");
+        System.out.println("-- start ----");
 
         // init elasticsearch transport client
         String clusterName = "johnsontest";
-        String esHost = "localhost";
         int esPort = 9300;
+        String esHost = "localhost";
+        //String keyStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/node-1-keystore.jks";
+        //String trustStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/truststore.jks";
+        //String pathHome = ".";
+        String pathHome = "/Users/gatement/app/maventest";
+        String keyStore = "node-1-keystore.jks";
+        String trustStore = "truststore.jks";
 
-        Settings settings = Settings.settingsBuilder()
-            .put("cluster.name", clusterName)
-            .put("client.transport.sniff", true)
-            .put("client.transport.nodes_sampler_interval", "10s")
-            .build();
+        final Settings settings = Settings.settingsBuilder()
+                .put("searchguard.ssl.transport.enabled", true)
+                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENABLE_OPENSSL_IF_AVAILABLE, false)
+                .put("searchguard.ssl.transport.keystore_filepath", keyStore)
+                .put("searchguard.ssl.transport.truststore_filepath", trustStore)
+                .put("searchguard.ssl.transport.enforce_hostname_verification", false)
+                .put("searchguard.ssl.transport.resolve_hostname", false)
+                .put("path.home", pathHome)
+                .put("cluster.name", clusterName)
+                .put("client.transport.sniff", true)
+                .put("client.transport.nodes_sampler_interval", "10s")
+                .build();
 
-        Client esclient = TransportClient.builder().settings(settings).build()
+        Client esclient = TransportClient.builder().settings(settings).addPlugin(SearchGuardSSLPlugin.class).build()
             .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(esHost, esPort)));
 
         System.out.println("Worker elasticsearch client initialized.");
-        esclient.close();
 
+        String indexName = "index1";
+        String typeName = "type1";
+        String body = "{\"name\": \"johnson\"}";
+        IndexResponse response = esclient.prepareIndex(indexName, typeName).setSource(body).get();
+
+        Thread.sleep(2000);
+        esclient.close();
+        System.out.println("-- end ------");
     }
 }
