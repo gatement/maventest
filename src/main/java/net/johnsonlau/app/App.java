@@ -1,12 +1,13 @@
 package net.johnsonlau.app;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-
-import static spark.Spark.*;
-import spark.ModelAndView;
-import spark.template.freemarker.FreeMarkerEngine;
+import java.net.InetSocketAddress;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.action.index.IndexResponse;
+import static org.elasticsearch.common.xcontent.XContentFactory.*;
+import org.elasticsearch.common.xcontent.XContentBuilder;
 
 public class App 
 {
@@ -14,29 +15,22 @@ public class App
     {
         System.out.println("start...");
 
-        get("/", (req, res) -> {
-            Map<String, Object> attributes = new HashMap<>();
-            attributes.put("fruits", Arrays.asList("apple", "banana", "orange", "peach"));
-            return new ModelAndView(attributes, "fruitPicker.ftl");
-        }, new FreeMarkerEngine());
+        // init elasticsearch transport client
+        String clusterName = "johnsontest";
+        String esHost = "localhost";
+        int esPort = 9300;
 
-        post("/favorite_fruit", (req, res) -> {
-            final String fruit = req.queryParams("fruit");
-            if(fruit == null)
-                return "Why don't you pick one?";
-            else
-                return "Your favorite fruit is " + fruit;
-        });
+        Settings settings = Settings.settingsBuilder()
+            .put("cluster.name", clusterName)
+            .put("client.transport.sniff", true)
+            .put("client.transport.nodes_sampler_interval", "10s")
+            .build();
 
-        get("/echo/:thing", (req, res) -> "echo: " + req.params(":thing"));
+        Client esclient = TransportClient.builder().settings(settings).build()
+            .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(esHost, esPort)));
 
-        get("/hello", (request, response) -> {
-            Map<String, Object> attributes = new HashMap<>();
-            attributes.put("message", "Have a nice day, Johnson!");
+        System.out.println("Worker elasticsearch client initialized.");
+        esclient.close();
 
-            // The hello.ftl file is located in directory:
-            // src/main/resources/spark/template/freemarker
-            return new ModelAndView(attributes, "hello.ftl");
-        }, new FreeMarkerEngine());
     }
 }
