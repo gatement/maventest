@@ -21,11 +21,11 @@ public class App
         String clusterName = "johnsontest";
         int esPort = 9300;
         String esHost = "localhost";
-        //String keyStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/node-1-keystore.jks";
+        //String keyStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/kirk-keystore.jks";
         //String trustStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/truststore.jks";
         //String pathHome = ".";
         String pathHome = "/Users/gatement/app/maventest";
-        String keyStore = "node-1-keystore.jks";
+        String keyStore = "kirk-keystore.jks";
         String trustStore = "truststore.jks";
 
         final Settings settings = Settings.settingsBuilder()
@@ -46,8 +46,8 @@ public class App
 
         System.out.println("Worker elasticsearch client initialized.");
 
-        String indexName = "index1";
-        String typeName = "type1";
+        String indexName = "javaindex1";
+        String typeName = "javatype1";
         String body = "{\"name\": \"johnson\"}";
         IndexResponse response = esclient.prepareIndex(indexName, typeName).setSource(body).get();
 
