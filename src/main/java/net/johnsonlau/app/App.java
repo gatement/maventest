@@ -24,7 +24,7 @@ public class App
         //String keyStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/kirk-keystore.jks";
         //String trustStore = "/Users/gatement/app/search-guard-ssl/example-pki-scripts/truststore.jks";
         //String pathHome = ".";
-        String pathHome = "/Users/gatement/app/maventest";
+        String pathHome = ".";
         String keyStore = "kirk-keystore.jks";
         String trustStore = "truststore.jks";
 
