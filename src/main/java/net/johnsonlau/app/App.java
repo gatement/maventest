@@ -8,8 +8,6 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.action.index.IndexResponse;
 import static org.elasticsearch.common.xcontent.XContentFactory.*;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import com.floragunn.searchguard.ssl.util.SSLConfigConstants;
-import com.floragunn.searchguard.ssl.SearchGuardSSLPlugin;
 
 public class App 
 {
@@ -29,19 +27,12 @@ public class App
         String trustStore = "truststore.jks";
 
         final Settings settings = Settings.settingsBuilder()
-                .put("searchguard.ssl.transport.enabled", true)
-                .put(SSLConfigConstants.SEARCHGUARD_SSL_TRANSPORT_ENABLE_OPENSSL_IF_AVAILABLE, false)
-                .put("searchguard.ssl.transport.keystore_filepath", keyStore)
-                .put("searchguard.ssl.transport.truststore_filepath", trustStore)
-                .put("searchguard.ssl.transport.enforce_hostname_verification", false)
-                .put("searchguard.ssl.transport.resolve_hostname", false)
-                .put("path.home", pathHome)
                 .put("cluster.name", clusterName)
                 .put("client.transport.sniff", true)
                 .put("client.transport.nodes_sampler_interval", "10s")
                 .build();
 
-        Client esclient = TransportClient.builder().settings(settings).addPlugin(SearchGuardSSLPlugin.class).build()
+        Client esclient = TransportClient.builder().settings(settings).build()
             .addTransportAddress(new InetSocketTransportAddress(new InetSocketAddress(esHost, esPort)));
 
         System.out.println("Worker elasticsearch client initialized.");
