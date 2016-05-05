@@ -28,6 +28,7 @@ public class App
                 .put("shield.user", "client1:johnson")
                 .put("shield.ssl.keystore.path", "./client.jks")
                 .put("shield.ssl.keystore.password", "123456")
+                .put("shield.ssl.hostname_verification", "false")
                 .put("shield.transport.ssl", "true")
                 .build();
 
